@@ -1,2 +1,1 @@
-# BlackJack
-# Stone project in 100 days of Python
+100 days of Python - BlackJack(OOP)

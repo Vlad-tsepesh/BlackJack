@@ -1,14 +1,6 @@
+from Dealer import Dealer
 from Deck import Deck
 from Player import Player
-from Dealer import Dealer
-from art import logo
-
-
-def clear():
-    print("\n" * 2)
-
-
-
 
 class Game:
     def __init__(self):
@@ -17,77 +9,140 @@ class Game:
         self.player = Player("Player")
         self.dealer = Dealer()
 
+    def play(self):
+        self.prepare_round()
+
+        if not self.take_bets():
+            return
+
+        self.deal_initial_cards()
+
+        if self.check_immediate_blackjack():
+            self.reset_hands()
+            return
+
+        self.player_phase()
+        self.dealer_phase()
+        self.evaluate_winner()
+        self.reset_hands()
+
     def prepare_round(self):
-        self.player.reset_hand()
-        self.dealer.reset_hand()
+        self.reset_hands()
         self.deck.shuffle()
+        self.print_line()
+        self.print_header()
 
     def take_bets(self):
-        self.player.bet = input(f"Bet: $".rjust(37))
-
-    def set_points(self):
-        self.dealer.points()
-        self.player.points()
-
+        bet = input("-> Bet: $".rjust(37))
+        if bet.isdigit() and 0 < int(bet) <= self.player.bank:
+            self.player.bet = int(bet)
+            self.player.bank -= self.player.bet
+            self.print_line()
+            return True
+        print("❌ Invalid bet amount.")
+        return self.take_bets()
 
     def deal_initial_cards(self):
-        self.player.add_card(self.deck.draw())
-        self.dealer.add_card(self.deck.draw())
-        self.player.add_card(self.deck.draw())
-        self.dealer.add_card(self.deck.draw())
+        for _ in range(2):
+            self.player.add_card(self.deck.draw())
+            self.dealer.add_card(self.deck.draw())
 
-    def start_round(self):
+    def check_immediate_blackjack(self):
+        player_blackjack = self.player.points() == 21
+        dealer_blackjack = self.dealer.points() == 21
 
-        self.print_top()
-        self.print_deck()
-        self.prepare_round()
-        self.print_cards()
-        self.take_bets()
-        self.deal_initial_cards()
-        self.print_line()
-        # Reset hands, bets, deal cards
+        if dealer_blackjack:
+            print("💣 Dealer has Blackjack!")
+            if player_blackjack:
+                self.player.bank += self.player.bet
+                self.player.bet = 0
+                self.print_status()
+                print("🤝 Push (Both have Blackjack)")
+            else:
+                self.print_status()
+                print("❌ Dealer wins.")
+            self.print_line()
+            return True
 
-    def player_turn(self):
-        self.print_deck()
-        self.print_cards()
-        self.print_bet()
-        self.print_line()
-        input()
-        self.player.add_card(self.deck.draw())
-        # Handle player input and actions
-        pass
+        if player_blackjack:
+            self.player.bank += int(self.player.bet * 2.5)
+            self.player.bet = 0
+            self.print_status()
+            print("🎉 Player has Blackjack!")
+            self.print_line()
+            return True
 
-    def dealer_turn(self):
-        if self.dealer.should_draw():
+        return False
+
+    def player_phase(self):
+        while self.player.points() < 21:
+            self.print_status(True)
+            move = input("Hit or Stand? ").strip().lower()
+            self.print_line()
+            if move == "stand":
+                break
+            elif move == "hit":
+                self.player.add_card(self.deck.draw())
+            else:
+                print("❌ Invalid input.")
+
+    def dealer_phase(self):
+        while self.dealer.should_draw():
             self.dealer.add_card(self.deck.draw())
 
     def evaluate_winner(self):
-        # Compare points and adjust bank
-        pass
+        player = self.player.points()
+        dealer = self.dealer.points()
 
-    def play(self):
-        game.start_round()
-        while True:
-            game.player_turn()
-            game.dealer_turn()
+        if player > 21:
+            self.print_status()
+            print("❌ Player busts. Dealer wins.")
+        elif dealer > 21:
+            self.player.bank += self.player.bet * 2
+            self.player.bet = 0
+            self.print_status()
+            print("🔥 Dealer busts. Player wins!")
+        elif player > dealer:
+            self.player.bank += self.player.bet * 2
+            self.player.bet = 0
+            self.print_status()
+            print("✅ Player wins!")
+        elif player < dealer:
+            self.print_status()
+            print("🟥 Dealer wins.")
+        else:
+            self.player.bank += self.player.bet
+            self.player.bet = 0
+            self.print_status()
+            print("🤝 Push.")
 
+    def reset_hands(self):
+        self.player.reset_hand()
+        self.dealer.reset_hand()
 
-    def print_top(self):
+    def print_header(self):
         print(f"   ♥  ♠  Black Jack ♦  ♣    Bank: ${self.player.bank}\n")
 
-    def print_deck(self):
-        print(f"🂡 {len(self.deck.cards)} ".rjust(39))
-
-    def print_cards(self):
-        print(self.dealer.cards().center(22), " - ", self.dealer.points())
-        print(self.player.cards().center(22), " - ", self.player.points())
-
-    def print_bet(self):
+    def print_status(self, isDone = False):
+        self.print_header()
+        if isDone:
+            print(f"{self.dealer.hidden_cards().center(22)}")
+        else:
+            print(f"{self.dealer.cards().center(22)} - {self.dealer.points()}")
+        print(f"{self.player.cards().center(22)} - {self.player.points()}")
         print(f"Bet: ${self.player.bet}".rjust(40))
 
     def print_line(self):
         print("_" * 100)
 
 
-game = Game()
-game.play()
+# Game loop
+while True:
+    input("Press Enter to start a new game.")
+    game = Game()
+    while True:
+        game.play()
+        input("Press Enter to continue...")
+        if game.player.bank <= 0:
+            print(f"💀 Out of money (${game.player.bank}). Game Over.")
+            break

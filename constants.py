@@ -1,5 +1,3 @@
-# constants.py
-
 PATTERN = {
     'A': 1,
     'K': 10,
@@ -23,7 +21,6 @@ CARD_TYPES = {
     'spades': '♤',
 }
 
-# Game rules/constants
 DEALER_DRAW_THRESHOLD = 17
 BLACKJACK_THRESHOLD = 21
 MAX_POINTS = 21
