@@ -1,5 +1,4 @@
 import random
-from replit import clear
 from art import logo
 import time
 
@@ -29,6 +28,10 @@ cardtypes = {
 # deck is the real time deck
 deck = []
 
+def clear():
+    print("\n" * 100)
+
+
 # in reallity it's not shuffling just restarting the Deck by creating a new one
 def shuffling():
     deck = []
@@ -42,9 +45,9 @@ def shuffling():
 def get_one_card(hands):   
     hands.append(deck.pop(deck.index(random.choice(deck))))
     clear()
-    image()
+    # image()
     game_scores()
-    time.sleep(0.5)
+    # time.sleep(0.5)
     return hands
 
 # deal is the function which simulate the real time game intro when the dealer gave 2 cards to each one player and dealer
@@ -57,9 +60,9 @@ def deal():
 def hit_bet_stand(player):
     player_decision = ''
     clear()
-    image()
+    # image()
     game_scores()
-    player_decision = input("|  X2 BET  type 'd' |\n| HIT press 'enter' | STAND type 's' | ").lower()
+    player_decision = input("\n| HIT press 'enter' | STAND type 's' | ").lower()
     if player_decision == 'd':
         return player_decision
     elif player_decision != 's':
@@ -71,7 +74,7 @@ def hit_or_stand(player):
     player_decision = ''
     while not 's' in player_decision and points_amount(player) < MAX_POINTS:
         clear()
-        image()
+        # image()
         game_scores()
         player_decision = input("\n| HIT press 'enter' | STAND type 's' | ").lower() 
         if player_decision != 's':
@@ -156,7 +159,7 @@ while not 'q' in game:
     while bank > 0:
         while True:
             clear()
-            image()
+            # image()
             print(f"\n\n\n\n" + f"Bet: ${bet}".rjust(40))
             choice = input(f"\nTo bet ${base_bet} press enter.\nALL INN type 'a'.\nTo change the bet type new amount: $")
             if choice.isdecimal():
@@ -185,12 +188,12 @@ while not 'q' in game:
             print(f"   ♥  ♠  Black Jack ♦  ♣    Bank: ${bank}.\n")
             print(f"🂡 {len(deck)} ".rjust(39) + " Shuffling")
             deck = shuffling()
-            time.sleep(1)
+            # time.sleep(1)
             clear()
             print(logo)
             print(f"   ♥  ♠  Black Jack ♦  ♣    Bank: ${bank}.\n")
             print(f"🂡 {len(deck)} ".rjust(39) + " Shuffling")
-            time.sleep(1)
+            # time.sleep(1)
             
         deal() # deal is the function which simulate the real time game intro when the dealer gave 2 cards to each one player and dealer
             
@@ -199,13 +202,13 @@ while not 'q' in game:
             if points_amount(dealer) == BLACKJACK_THRESHOLD:   # if dealer have black jack
                 player_state = '    Push!    Black Jack'
                 dealer_state = '    Push!    Black Jack'
-                time.sleep(0.5) 
+                # time.sleep(0.5)
                 bank += int(bet)
                 
             
             else:  #if player have a black jack and dealer not.
                 player_state = '    You win!    Black Jack!'
-                time.sleep(0.5) 
+                # time.sleep(0.5)
                 bank += int(bet) * 2
      
                             
@@ -216,7 +219,7 @@ while not 'q' in game:
                 betx2 = hit_bet_stand(player)
                     
                 if 'd' in betx2: #if player chose to double the bet amount
-                    time.sleep(0.5) 
+                    # time.sleep(0.5)
                     bank -= bet
                     time.sleep(0.5)     
                     bet *= 2
@@ -241,13 +244,13 @@ while not 'q' in game:
                     player_state = '    You win!'
                     dealer_state = '    Bust!'
                     bank += int(bet) * 2
-                    time.sleep(0.5) 
+                    # time.sleep(0.5)
                 
                 else:       # if game were clean  player and dealer will compare the points amount.
                     if points_amount(player) > points_amount(dealer): # conditions for player to win
                         player_state = '    You win!'
                         bank += int(bet) * 2
-                        time.sleep(0.5) 
+                        # time.sleep(0.5)
                 
                     elif points_amount(player) < points_amount(dealer): # conditions for dealer to win
                         dealer_state = '    Dealer win!'
@@ -256,12 +259,12 @@ while not 'q' in game:
                         player_state = '    Push!'
                         dealer_state = '    Push!'
                         bank += int(bet)
-                        time.sleep(0.5) 
+                        # time.sleep(0.5)
                       
         dealer_cards = 'unhidden' # after all've done their moves dealer also show his cards
         bet = 0
         clear()
-        image()
+        # image()
         game_scores()
         input("\n\n\n\tPress enter to continue.")
         if not bank:
