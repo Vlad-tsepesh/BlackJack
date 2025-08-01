@@ -1,7 +1,8 @@
-from constants import TEN
+from game_constants import *
+
 
 class Player:
-    def __init__(self, name, bank=1000):
+    def __init__(self, name="Player", bank=1000):
         self.name = name
         self.hand = []
         self.bank = bank
@@ -30,10 +31,25 @@ class Player:
             points += TEN
         return points
 
-    def place_bet(self, amount):
-        # Deduct from bank, etc.
-        pass
+    def is_valid_bet(self, amount: str) -> bool:
+        return amount.isdigit() and 0 < int(amount) <= self.bank
+
+    def place_bet(self, amount: int):
+        self.bet = amount
+        self.bank -= amount
 
     def reset_hand(self):
         self.hand = []
         self.ace = False
+
+    def payout_blackjack(self):
+        self.bank += int(self.bet * 2.5)
+        self.bet = 0
+
+    def payout_win(self):
+        self.bank += self.bet * 2
+        self.bet = 0
+
+    def payout_push(self):
+        self.bank += self.bet
+        self.bet = 0

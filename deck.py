@@ -1,7 +1,8 @@
 import random
 
-from Card import Card
-from constants import PATTERN
+from card import Card
+from game_constants import PATTERN, CARD_TYPES
+
 
 class Deck:
     def __init__(self):
@@ -11,7 +12,7 @@ class Deck:
     def build(self):
         self.cards = []
         for _ in range(6):
-            for suit_symbol in ['♧', '♢', '♡', '♤']:
+            for suit_symbol in CARD_TYPES.values():
                 for rank, val in PATTERN.items():
                     self.cards.append(Card(rank, suit_symbol, val))
 
